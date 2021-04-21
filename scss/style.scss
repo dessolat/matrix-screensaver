@@ -1,0 +1,36 @@
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+body {
+	background-color: black;
+	height: 100vh;
+	overflow: hidden;
+}
+
+div > div {
+	width: 20px;
+	height: 20px;
+	text-align: center;
+	line-height: 20px;
+	position: absolute;
+	animation-name: colors;
+	animation-duration: 2.5s;
+}
+
+@keyframes colors {
+	0% {
+		color: rgb(255, 255, 255);
+		opacity: 1;
+	}
+
+	5% {
+		color: rgb(101, 240, 113);
+	}
+
+	100% {
+		opacity: 0;
+	}
+}
