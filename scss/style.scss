@@ -5,19 +5,15 @@
 }
 
 body {
+	--speed: 1.5;
 	background-color: black;
 	height: 100vh;
 	overflow: hidden;
 }
 
-div > div {
-	width: 20px;
-	height: 20px;
-	text-align: center;
-	line-height: 20px;
+.element {
 	position: absolute;
-	animation-name: colors;
-	animation-duration: 2.5s;
+	animation: colors calc(2.5s / var(--speed)) linear;
 }
 
 @keyframes colors {

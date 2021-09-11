@@ -1,1 +1,45 @@
-*{margin:0;padding:0;-webkit-box-sizing:border-box;box-sizing:border-box}body{background-color:black;height:100vh;overflow:hidden}div>div{width:20px;height:20px;text-align:center;line-height:20px;position:absolute;-webkit-animation-name:colors;animation-name:colors;-webkit-animation-duration:2.5s;animation-duration:2.5s}@-webkit-keyframes colors{0%{color:#fff;opacity:1}5%{color:#65f071}100%{opacity:0}}@keyframes colors{0%{color:#fff;opacity:1}5%{color:#65f071}100%{opacity:0}}
+* {
+  margin: 0;
+  padding: 0;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+}
+
+body {
+  --speed: 1.5;
+  background-color: black;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.element {
+  position: absolute;
+  -webkit-animation: colors calc(2.5s / var(--speed)) linear;
+          animation: colors calc(2.5s / var(--speed)) linear;
+}
+
+@-webkit-keyframes colors {
+  0% {
+    color: white;
+    opacity: 1;
+  }
+  5% {
+    color: #65f071;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes colors {
+  0% {
+    color: white;
+    opacity: 1;
+  }
+  5% {
+    color: #65f071;
+  }
+  100% {
+    opacity: 0;
+  }
+}

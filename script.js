@@ -1,91 +1,76 @@
-const init = threads => {
-  for (let i = 0; i < threads; i++) {
-    elems[i] = { link: document.createElement('div'), top: 0 };
-    elems[i].link.innerHTML = symbols[Math.floor(Math.random() * symbols.length)];
-    elems[i]['left'] = Math.random() * numCols * 20;
-    elems[i].link.style.left = elems[i]['left'] + 'px';
-    elems[i]['top'] = Math.random() * numRows * 20;
-    elems[i].link.style.top = elems[i]['top'] + 'px';
-    root.appendChild(elems[i].link);
-    setTimeout(() => elems[i].link.classList.add('active'), 20);
+'use strict';
+
+const ELEM_HEIGHT = 20,
+  ELEM_WIDTH = 16;
+let MAX_TOP = document.documentElement.clientHeight - ELEM_HEIGHT,
+  MAX_LEFT = document.documentElement.clientWidth - ELEM_WIDTH,
+  NUM_ROWS = MAX_TOP / ELEM_HEIGHT,
+  NUM_COLS = MAX_LEFT / ELEM_WIDTH;
+
+const pause = ms => new Promise(res => setTimeout(res, ms));
+
+const handleResize = () => {
+  MAX_TOP = document.documentElement.clientHeight - ELEM_HEIGHT;
+  MAX_LEFT = document.documentElement.clientWidth - ELEM_WIDTH;
+  NUM_ROWS = MAX_TOP / ELEM_HEIGHT;
+  NUM_COLS = MAX_LEFT / ELEM_WIDTH;
+};
+
+//Add new element to body
+const addElement = coords => {
+  const element = document.createElement('span');
+  const charCode = Math.floor(Math.random() * 1040 + 19968);
+  element.innerHTML = String.fromCharCode(charCode);
+  element.className = 'element';
+  element.style.left = coords.x + 'px';
+  element.style.top = coords.y + 'px';
+  document.body.appendChild(element);
+
+  return element;
+};
+
+//Remove element from body after specified interval
+const removeElement = (element, ms) => {
+  setTimeout(() => {
+    document.body.removeChild(element);
+  }, ms);
+};
+
+//Render starting elements
+const initialRendering = (flows, speed) => {
+  for (let i = 0; i < flows; i++) {
+    const coords = {
+      x: Math.floor(Math.random() * (NUM_COLS + 1)) * ELEM_WIDTH,
+      y: Math.floor(Math.random() * (NUM_ROWS + 1)) * ELEM_HEIGHT
+    };
+    const element = addElement(coords);
+    removeElement(element, 2500 / speed);
   }
 };
 
-const addElem = threads => {
-  for (let i = 0; i < threads; i++) {
-    elems.unshift({ link: document.createElement('div') });
-    elems[0].link.innerHTML = symbols[Math.floor(Math.random() * symbols.length)];
-    if (elems[threads]['top'] + 20 < maxHeight) {
-      elems[0]['top'] = elems[threads]['top'] + 20;
-      elems[0]['left'] = elems[threads]['left'];
-    } else {
-      elems[0]['top'] = Math.random() * numRows * 20;
-      elems[0]['left'] = Math.random() * numCols * 20;
-    }
-    elems[0].link.style.left = elems[0]['left'] + 'px';
-    elems[0].link.style.top = elems[0]['top'] + 'px';
+const main = async (flows, speed) => {
+  document.body.style.setProperty('--speed', speed);
+  initialRendering(flows, speed);
 
-    root.appendChild(elems[0].link);
-		console.log('added')
+  while (true) {
+    await pause(150 / speed);
+
+    [...document.querySelectorAll('.element')].slice(-flows).forEach(elem => {
+      const coords =
+        +elem.style.top.slice(0, -2) <= MAX_TOP
+          ? { x: elem.style.left.slice(0, -2), y: +elem.style.top.slice(0, -2) + ELEM_HEIGHT }
+          : {
+              x: Math.floor(Math.random() * (NUM_COLS + 1)) * ELEM_WIDTH,
+              y: Math.floor(Math.random() * (NUM_ROWS + 1)) * ELEM_HEIGHT
+            };
+
+      const element = addElement(coords);
+      removeElement(element, 2500 / speed);
+    });
   }
 };
 
-const cleanTrash = threads =>
-  setInterval(() => {
-    for (let i = 0; i < threads; i++) {
-      root.removeChild(elems[elems.length - 1].link);
-      elems.pop();
-      console.log('popped');
-    }
-  }, 90);
+window.addEventListener('resize', handleResize);
 
-//Init
-const root = document.querySelector('.root'),
-  numRows = Math.floor(document.documentElement.clientHeight / 20),
-  numCols = Math.floor(document.documentElement.clientWidth / 20),
-  maxHeight = numRows * 20,
-  threads = 33,
-  elems = [],
-  symbols = [
-    '一',
-    '人',
-    '日',
-    '月',
-    '水',
-    '山',
-    '大',
-    '小',
-    '口',
-    '火',
-    '男',
-    '女',
-    '天',
-    '牛',
-    '马',
-    '羊',
-    '木',
-    '工',
-    '开',
-    '心',
-    '门',
-    '不',
-    '十',
-    '手',
-    '王',
-    '米',
-    '生',
-    '中',
-    '上',
-    '下'
-  ];
-init(threads);
-
-//New symbol every 0.09 sec
-setInterval(() => {
-  addElem(threads);
-}, 90);
-
-//Trash cleaning after 1.2 sec
-setTimeout(() => {
-  cleanTrash(threads);
-}, 1200);
+//Starting the app with specified number of flows, speed
+main(35, 1.5);
